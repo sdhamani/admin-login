@@ -25,10 +25,12 @@ export default function LoginPage() {
   })
 
   const onSubmit = async (data: LoginFormValues) => {
+    console.log('Submitting login form', data)
     setServerError(null)
     try {
       await loginUser(data)
     } catch (err) {
+      console.log('Login error:', err)
       if (isAuthError(err)) {
         setServerError(AUTH_ERROR_MESSAGES[err.code] ?? err.message)
       } else {
@@ -41,7 +43,7 @@ export default function LoginPage() {
     <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4 py-12 sm:px-6 lg:px-8">
       <div className="w-full max-w-md">
         {/* Header */}
-        <div className="mb-8 text-center">
+        <div className="mb-8 text-center" style={{ fontFamily: 'Arial', color: '#1a1a1a' }}>
           <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-indigo-600">
             <LockIcon />
           </div>
