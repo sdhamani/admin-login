@@ -53,3 +53,44 @@ When building forms, follow the pattern in `src/comparison/detailed-prompt/Login
 - No `tailwind.config.js` — all customization goes in `src/index.css` via `@theme {}`
 - Utility classes that reference design tokens use the token name directly: `bg-primary`, `text-on-surface`, `rounded-lg`
 - Arbitrary values like `text-[10px]` and `shadow-[0_0_8px_#ffb1c3]` are acceptable for one-off values not in the token system
+
+## Worktree & branch rules
+
+Every feature must be built in its own git worktree on its own branch — never work directly on `main`.
+
+```bash
+# Create a new worktree for a feature
+git worktree add ../admin-login-<feature-name> -b feature/<feature-name>
+```
+
+Branch naming:
+- `feature/<name>` — new functionality
+- `fix/<name>` — bug fixes
+- `chore/<name>` — non-functional changes (deps, config, docs)
+
+Each worktree is a separate directory on disk. Open each one in its own Cursor/Claude Code tab.
+
+## Before every commit
+
+Run these in order — do not commit if any fails:
+
+```bash
+npm run lint       # must pass with zero errors
+npm run build      # must compile cleanly (tsc -b + vite build)
+```
+
+No `console.log` statements in committed code.
+
+## PR rules
+
+- Every feature branch must be merged via a PR — no direct pushes to `main`
+- PR titles must follow conventional commits: `feat:`, `fix:`, `chore:`, `refactor:`
+- PR description must include: what changed, how to test it, and a link to the related task or spec
+- PRs must pass lint and build before merging
+
+## Component rules
+
+- One component per file, filename matches the export name
+- No inline styles — Tailwind classes only
+- No hardcoded colors or spacing outside of `src/index.css` tokens
+- Data constants go at the top of the file, not inline in JSX
