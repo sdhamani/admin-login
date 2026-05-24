@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { loginSchema, type LoginFormValues } from '../schemas/loginSchema'
-import { loginUser, isAuthError } from '../services/auth'
-import type { AuthErrorCode } from '../types/auth'
+import { loginSchema, type LoginFormValues } from './loginSchema'
+import { loginUser, isAuthError } from './auth.service'
+import type { AuthErrorCode } from './auth.types'
 
 const AUTH_ERROR_MESSAGES: Record<AuthErrorCode, string> = {
   INVALID_CREDENTIALS: 'The email or password you entered is incorrect.',
