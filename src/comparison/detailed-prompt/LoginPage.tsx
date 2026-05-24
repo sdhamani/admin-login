@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { loginSchema, type LoginFormValues } from '../schemas/loginSchema'
@@ -13,21 +13,39 @@ const AUTH_ERROR_MESSAGES: Record<AuthErrorCode, string> = {
     'Unable to reach the server. Check your internet connection and try again.',
 }
 
+const REMEMBER_ME_KEY = 'login_remembered_email'
+
 export default function LoginPage() {
   const [serverError, setServerError] = useState<string | null>(null)
+  const [rememberMe, setRememberMe] = useState(
+    () => !!localStorage.getItem(REMEMBER_ME_KEY)
+  )
 
   const {
     register,
     handleSubmit,
+    setValue,
     formState: { errors, isSubmitting },
   } = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
   })
 
+  useEffect(() => {
+    const savedEmail = localStorage.getItem(REMEMBER_ME_KEY)
+    if (savedEmail) {
+      setValue('email', savedEmail)
+    }
+  }, [setValue])
+
   const onSubmit = async (data: LoginFormValues) => {
     setServerError(null)
     try {
       await loginUser(data)
+      if (rememberMe) {
+        localStorage.setItem(REMEMBER_ME_KEY, data.email)
+      } else {
+        localStorage.removeItem(REMEMBER_ME_KEY)
+      }
     } catch (err) {
       if (isAuthError(err)) {
         setServerError(AUTH_ERROR_MESSAGES[err.code] ?? err.message)
@@ -137,6 +155,20 @@ export default function LoginPage() {
                   {errors.password.message}
                 </p>
               )}
+            </div>
+
+            {/* Remember me */}
+            <div className="flex items-center gap-2">
+              <input
+                id="remember-me"
+                type="checkbox"
+                checked={rememberMe}
+                onChange={(e) => setRememberMe(e.target.checked)}
+                className="h-4 w-4 rounded border-gray-300 text-indigo-600 accent-indigo-600 focus:ring-2 focus:ring-indigo-500"
+              />
+              <label htmlFor="remember-me" className="text-sm text-gray-700">
+                Remember me
+              </label>
             </div>
 
             {/* Submit */}
